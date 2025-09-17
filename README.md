@@ -55,5 +55,26 @@ See `requirements.txt` for a complete list of dependencies. Key packages include
 - The `--add-data` option uses a platform-specific separator (`;` for Windows, `:` for Linux/macOS).
 - The output executable is placed in the `dist` folder within the project or obfuscated directory.
 
+## Support & Donations
+If you find PyPack helpful, please consider supporting the project with a donation! Your contributions help keep the project alive and improve its features.
+You can send donations to the following wallet addresses. **Always verify the address before sending!**
+
+| Cryptocurrency | Address | Network |
+|---------------|---------|---------|
+| **Bitcoin (BTC)** | `bc1q3r79a2t3tuada56zv722ykrwjadgsh79m5pthz` | Bitcoin |
+| **Ethereum (ETH) / USDT** | `0x66D74F4b7527ea9eD5BA5e2E02fa93fB7a90325d` | ERC-20 |
+| **Solana (SOL)** | `9irdHFdeWVb6cnu8HTdKAs3Lg1PD8HiQQLhVHLSAQq6X` | Solana |
+
+**Important**:
+- **Replace the above addresses with your own wallet addresses.**
+- Copy-paste addresses exactly to avoid errors.
+- Donations are non-refundable, so double-check before sending.
+- For security, use a trusted wallet like [Exodus](https://exodus.com) or [Trust Wallet](https://trustwallet.com).
+
+### Other Ways to Support
+- Give the project a ⭐ on GitHub.
+- Share PyPack with your friends or on social media.
+- Contribute by submitting pull requests or reporting issues.
+
 ## Contributing
 Contributions are welcome! Please fork the repository, make changes, and submit a pull request.
