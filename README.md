@@ -16,7 +16,7 @@ PyPack is a graphical user interface (GUI) tool designed to simplify the process
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/PyPack.git
+   git clone https://github.com/Arianlavi/PyPack.git
    cd PyPack
    ```
 2. Install dependencies:
