@@ -1,4 +1,3 @@
-PyPack
 PyPack is a graphical user interface (GUI) tool designed to simplify the process of building Python executables using PyInstaller and PyArmor. It allows users to select project directories, entry scripts, icons, and additional data files, and supports options like creating a single executable file, enabling/disabling console, and obfuscating code with PyArmor.
 Features
 
