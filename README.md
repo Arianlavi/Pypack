@@ -1,59 +1,98 @@
-# PyPack
 
-PyPack is a graphical user interface (GUI) tool designed to simplify the process of building Python executables using PyInstaller and PyArmor. It allows users to select project directories, entry scripts, icons, and additional data files, and supports options like creating a single executable file, enabling/disabling console, and obfuscating code with PyArmor.
+# 🐍 PyPack
+![PyPack](https://img.shields.io/badge/Status-Active-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![PyQt5](https://img.shields.io/badge/PyQt5-GUI-lightgrey)
 
-## Features
-- Select project directory, entry script, and icon file (.ico) for the executable.
-- Support for PyInstaller options: onefile, windowed (no console), console, and UPX compression.
-- Optional code obfuscation with PyArmor.
-- Add additional data files to the executable (e.g., JSON, images).
-- Log window to monitor the build process in real-time.
+**PyPack** is a powerful GUI tool for building Python executables using **PyInstaller**, with optional **PyArmor** integration for code obfuscation. It simplifies the process by providing an intuitive interface to select project directories, entry scripts, icons, and additional data files, with support for single-file builds, console/windowed modes, and more.
 
-## Prerequisites
-- Python 3.7 or higher
-- Required Python packages (see `requirements.txt`)
+---
 
-## Installation
+## 🚀 Features
+
+- **Project Configuration**:
+  - Select project directory, main Python script, and icon (.ico) file.
+  - Add additional data files (e.g., JSON, images).
+- **PyInstaller Options**:
+  - **Onefile**: Create a single executable file.
+  - **Windowed**: Build a GUI application without a console.
+  - **Console**: Include a console for debugging output.
+  - **UPX Compression**: Reduce executable size using UPX.
+- **PyArmor Obfuscation**: Optional code protection with PyArmor.
+- **Live Log Window**: Real-time build process monitoring.
+- **Intuitive GUI**: User-friendly interface built with Tkinter.
+
+---
+## 🖥️ Screenshots
+
+![App Screenshot](screenshot.png)
+
+---
+## 🛠 Prerequisites
+
+- **Python**: Version 3.7 or higher.
+- **Required Packages**: Listed in `requirements.txt`.
+- **Optional**: PyArmor (for obfuscation).
+- **Optional**: UPX (for compression).
+
+---
+
+## 📥 Installation
+
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Arianlavi/PyPack.git
+   git clone https://github.com/YOUR_USERNAME/PyPack.git
    cd PyPack
-   ```
+
 2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+	```bash
+	pip install -r requirements.txt
+	```
 3. Run the application:
+	```bash
+	python pypack.py
+	```
+
+
+
+## 🖥 Usage
+
+1. Run the application:
    ```bash
    python pypack.py
    ```
 
-## Usage
-1. Launch the application by running `python pypack.py`.
-2. Select the **Project Directory** containing your Python project.
-3. Choose the **Entry Script** (the main `.py` file to build).
-4. Optionally select an **Icon File** (.ico) for the executable.
-5. Check desired options:
-   - **Onefile**: Create a single executable file.
-   - **Windowed**: Build without a console window (GUI mode).
-   - **Console**: Include a console window.
-   - **Use UPX**: Enable UPX compression to reduce executable size.
-   - **Obfuscate with PyArmor**: Obfuscate the code before building.
-6. Add any additional data files (e.g., JSON, images) using the **Add Data File** button.
-7. Click **Build EXE** to start the build process.
-8. Monitor the build progress in the log window. The output executable will be in the `dist` folder.
+2. Configure your project:
+   - **Project Directory**: Select the folder containing your Python project.
+   - **Entry Script**: Choose the main `.py` file.
+   - **Icon File**: Optionally select an `.ico` file.
+   - **Build Options**:
+     - [x] Onefile
+     - [x] Windowed (GUI only)
+     - [x] Console
+     - [x] Use UPX
+     - [x] Obfuscate with PyArmor
+   - **Additional Data Files**: Add files like JSON or images.
 
-## Requirements
-See `requirements.txt` for a complete list of dependencies. Key packages include:
-- `tkinter` (included with Python for GUI)
-- `pyinstaller` (for building executables)
-- `pyarmor` (optional, for code obfuscation)
+3. Click **Build EXE** to start the build.
 
-## Notes
-- Ensure the project directory contains all necessary Python files and resources.
-- PyArmor requires a separate installation and configuration if obfuscation is enabled.
-- The `--add-data` option uses a platform-specific separator (`;` for Windows, `:` for Linux/macOS).
-- The output executable is placed in the `dist` folder within the project or obfuscated directory.
+4. Monitor progress in the log window.
+
+5. Find the executable in the `dist/` folder.
+
+---
+
+## 📦 Requirements
+
+Key packages:
+- `pyinstaller`: For building executables.
+- `pyarmor` (optional): For code obfuscation.
+- `tkinter`: For the GUI (included with Python).
+
+Full list in `requirements.txt`.
+
+
+
 
 ## Support & Donations
 If you find PyPack helpful, please consider supporting the project with a donation! Your contributions help keep the project alive and improve its features.
@@ -76,5 +115,35 @@ You can send donations to the following wallet addresses. **Always verify the ad
 - Share PyPack with your friends or on social media.
 - Contribute by submitting pull requests or reporting issues.
 
-## Contributing
-Contributions are welcome! Please fork the repository, make changes, and submit a pull request.
+---
+
+## ⚠️ Disclaimer
+
+* Use responsibly. Only for your own Telegram accounts.
+* Do not use for spam, phishing, or any illegal activity.
+* Telegram may restrict accounts if abused.
+
+---
+
+## 💡 Contributing
+
+Contributions are welcome!
+
+* Fork the repository
+* Create a new branch
+* Submit a pull request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📬 Contact
+
+Created by **Arian Lavi**
+
+* GitHub: [ArianLavi](https://github.com/arianlavi)
+* Telegram: [@Arianlavi](https://t.me/Arianlvi)
