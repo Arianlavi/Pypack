@@ -41,7 +41,7 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/PyPack.git
+   git clone https://github.com/Arianlavi/PyPack.git
    cd PyPack
 
 2. Install dependencies:
