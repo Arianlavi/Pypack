@@ -1,171 +1,198 @@
-import tkinter as tk
+import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import subprocess
 import threading
 import sys
+import shutil
 from pathlib import Path
-import re
-import pkgutil
+import modulefinder
+import importlib.util
+import webbrowser
+import os
+from PIL import Image
+
+
+def resource_path(relative_path):
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 DATA_SEP = ";" if sys.platform.startswith("win") else ":"
+GITHUB_ICON = resource_path("github.png")  
 
+def detect_imports(folder):
+    py_files = list(Path(folder).rglob("*.py"))
+    imports = set()
+    for file in py_files:
+        try:
+            finder = modulefinder.ModuleFinder()
+            finder.run_script(str(file))
+            imports.update(finder.modules.keys())
+        except Exception:
+            pass
+    return list(imports)
 
-class BuildGUI:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("PyPack V1")
-        self.root.geometry("950x700")
-        self.root.configure(bg="#2b2b2b")
+def check_installed(mod_name):
+    return importlib.util.find_spec(mod_name) is not None
 
-        # Vars
-        self.project_dir = tk.StringVar()
-        self.entry_file = tk.StringVar()
-        self.icon_file = tk.StringVar()
-        self.onefile = tk.BooleanVar(value=True)
-        self.windowed = tk.BooleanVar(value=True)
-        self.console = tk.BooleanVar(value=False)
-        self.use_upx = tk.BooleanVar(value=False)
-        self.use_pyarmor = tk.BooleanVar(value=False)
+class BuildGUI(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("🐍 PyPack V2")
+        self.geometry("877x738")
+        self.resizable(False, False)
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("blue")
+
+        self.project_dir = ctk.StringVar()
+        self.entry_file = ctk.StringVar()
+        self.icon_file = ctk.StringVar()
+        self.upx_path = ctk.StringVar()
+        self.onefile = ctk.BooleanVar(value=True)
+        self.windowed = ctk.BooleanVar(value=True)
+        self.console = ctk.BooleanVar(value=False)
+        self.use_upx = ctk.BooleanVar(value=False)
+        self.use_pyarmor = ctk.BooleanVar(value=False)
         self.data_files = []
 
-        # UI
+        try:
+            self.github_image = ctk.CTkImage(Image.open(GITHUB_ICON), size=(40, 40))
+        except Exception:
+            self.github_image = None
+
         self._build_ui()
 
     def _build_ui(self):
-        frame = tk.Frame(self.root, bg="#2b2b2b")
-        frame.pack(pady=10, fill="x")
+        top_frame = ctk.CTkFrame(self, corner_radius=15)
+        top_frame.pack(fill="x", padx=10, pady=10)
+        ctk.CTkLabel(top_frame, text="🐍 PyPack V2 ", font=("Segoe UI", 20, "bold")).pack(side="left", padx=10)
+        if self.github_image:
+            github_btn = ctk.CTkButton(
+                top_frame,
+                text="",
+                image=self.github_image,
+                width=40,
+                height=40,
+                fg_color="transparent",
+                hover_color="#2f2f2f",
+                command=lambda: webbrowser.open("https://github.com/Arianlavi/Pypack")
+            )
+            github_btn.pack(side="right", padx=10)
 
-        # Project Dir
-        tk.Label(frame, text="Project Dir:", bg="#2b2b2b", fg="white").grid(row=0, column=0, sticky="w")
-        tk.Entry(frame, textvariable=self.project_dir, width=65, bg="#3c3f41", fg="white", insertbackground="white").grid(row=0, column=1)
-        tk.Button(frame, text="Browse", command=self._browse_project, bg="#555555", fg="white").grid(row=0, column=2, padx=5)
+        frame = ctk.CTkFrame(self, corner_radius=15)
+        frame.pack(pady=10, padx=10, fill="x")
 
-        # Entry Script
-        tk.Label(frame, text="Entry Script:", bg="#2b2b2b", fg="white").grid(row=1, column=0, sticky="w")
-        tk.Entry(frame, textvariable=self.entry_file, width=65, bg="#3c3f41", fg="white", insertbackground="white").grid(row=1, column=1)
-        tk.Button(frame, text="Browse", command=self._browse_entry, bg="#555555", fg="white").grid(row=1, column=2, padx=5)
+        def add_row(row, text, var, cmd=None):
+            ctk.CTkLabel(frame, text=text).grid(row=row, column=0, sticky="w", pady=5, padx=5)
+            ctk.CTkEntry(frame, textvariable=var, width=600).grid(row=row, column=1, padx=5)
+            if cmd:
+                ctk.CTkButton(frame, text="Browse", command=cmd).grid(row=row, column=2, padx=5)
 
-        # Icon
-        tk.Label(frame, text="Icon (.ico):", bg="#2b2b2b", fg="white").grid(row=2, column=0, sticky="w")
-        tk.Entry(frame, textvariable=self.icon_file, width=65, bg="#3c3f41", fg="white", insertbackground="white").grid(row=2, column=1)
-        tk.Button(frame, text="Browse", command=self._browse_icon, bg="#555555", fg="white").grid(row=2, column=2, padx=5)
+        add_row(0, "📂 Project Dir:", self.project_dir, self._browse_project)
+        add_row(1, "▶ Entry Script:", self.entry_file, self._browse_entry)
+        add_row(2, "🖼 Icon (.ico):", self.icon_file, self._browse_icon)
+        add_row(3, "🗜 UPX Path:", self.upx_path, self._browse_upx)
 
         # Options
-        opt_frame = tk.LabelFrame(self.root, text="Options", bg="#2b2b2b", fg="white")
-        opt_frame.pack(fill="x", padx=10, pady=5)
-        tk.Checkbutton(opt_frame, text="Onefile", variable=self.onefile, bg="#2b2b2b", fg="white", selectcolor="#2b2b2b").pack(side="left", padx=5)
-        tk.Checkbutton(opt_frame, text="Windowed (no console)", variable=self.windowed, bg="#2b2b2b", fg="white", selectcolor="#2b2b2b").pack(side="left", padx=5)
-        tk.Checkbutton(opt_frame, text="Console", variable=self.console, bg="#2b2b2b", fg="white", selectcolor="#2b2b2b").pack(side="left", padx=5)
-        tk.Checkbutton(opt_frame, text="Use UPX", variable=self.use_upx, bg="#2b2b2b", fg="white", selectcolor="#2b2b2b").pack(side="left", padx=5)
-        tk.Checkbutton(opt_frame, text="Obfuscate with PyArmor", variable=self.use_pyarmor, bg="#2b2b2b", fg="white", selectcolor="#2b2b2b").pack(side="left", padx=5)
+        opt_frame = ctk.CTkFrame(self, corner_radius=15)
+        opt_frame.pack(fill="x", padx=10, pady=10)
+        for text, var in [
+            ("Onefile", self.onefile),
+            ("Windowed (no console)", self.windowed),
+            ("Console", self.console),
+            ("Use UPX", self.use_upx),
+            ("Obfuscate with PyArmor", self.use_pyarmor)
+        ]:
+            ctk.CTkCheckBox(opt_frame, text=text, variable=var).pack(side="left", padx=15)
 
-        # Data files
-        data_frame = tk.LabelFrame(self.root, text="Data Files (--add-data)", bg="#2b2b2b", fg="white")
+        # Data Files
+        data_frame = ctk.CTkFrame(self, corner_radius=15)
         data_frame.pack(fill="x", padx=10, pady=5)
-        self.data_listbox = tk.Listbox(data_frame, height=5, bg="#3c3f41", fg="white")
-        self.data_listbox.pack(side="left", fill="x", expand=True, padx=5)
-        tk.Button(data_frame, text="Add Data File", command=self._add_data_file, bg="#555555", fg="white").pack(side="left", padx=5)
-        tk.Button(data_frame, text="Clear", command=self._clear_data_files, bg="#555555", fg="white").pack(side="left", padx=5)
-        tk.Button(self.root, text="🚀 Build EXE", font=("Arial", 14, "bold"), bg="#DE3424", fg="white", command=self._start_build).pack(pady=10)
+        self.data_listbox = ctk.CTkTextbox(data_frame, width=730, height=100)
+        self.data_listbox.pack(side="left", padx=5, pady=5)
+        btn_frame = ctk.CTkFrame(data_frame, corner_radius=15)
+        btn_frame.pack(side="left", padx=5)
+        ctk.CTkButton(btn_frame, text="➕ Add File", command=self._add_data_file).pack(pady=5)
+        ctk.CTkButton(btn_frame, text="❌ Clear Files", command=self._clear_data_files).pack(pady=5)
 
-        # Log 
-        self.log_box = tk.Text(self.root, wrap="word", bg="black", fg="lime", height=20)
-        self.log_box.pack(fill="both", expand=True, padx=10, pady=5)
+        ctk.CTkButton(
+            self,
+            text="🚀 Build EXE",
+            font=("Segoe UI", 16, "bold"),
+            fg_color="#d83b01",
+            hover_color="#a52a2a",
+            command=self._start_build
+        ).pack(pady=15)
 
-    #functions
+        self.log_box = ctk.CTkTextbox(self, width=850, height=320, font=("Consolas", 11))
+        self.log_box.pack(fill="both", expand=True, padx=10, pady=10)
+
     def _browse_project(self):
         path = filedialog.askdirectory()
-        if path:
-            self.project_dir.set(path)
+        if path: self.project_dir.set(path)
 
     def _browse_entry(self):
         path = filedialog.askopenfilename(filetypes=[("Python files", "*.py")])
-        if path:
-            self.entry_file.set(path)
+        if path: self.entry_file.set(path)
 
     def _browse_icon(self):
         path = filedialog.askopenfilename(filetypes=[("Icon files", "*.ico")])
-        if path:
-            self.icon_file.set(path)
+        if path: self.icon_file.set(path)
 
-    # Data files
+    def _browse_upx(self):
+        path = filedialog.askdirectory()
+        if path: self.upx_path.set(path)
+
     def _add_data_file(self):
         path = filedialog.askopenfilename()
         if path:
             self.data_files.append(path)
-            self.data_listbox.insert("end", path)
+            self.data_listbox.insert("end", path + "\n")
 
     def _clear_data_files(self):
         self.data_files.clear()
-        self.data_listbox.delete(0, "end")
+        self.data_listbox.delete("1.0", "end")
 
-    # Logging
     def _log(self, msg):
         self.log_box.insert("end", msg + "\n")
         self.log_box.see("end")
-        self.root.update_idletasks()
+        self.update_idletasks()
 
-    # Build process
     def _start_build(self):
         threading.Thread(target=self._build, daemon=True).start()
 
-    # Scan all .py files
-    def _scan_python_files(self, folder):
-        py_files = []
-        for path in Path(folder).rglob("*.py"):
-            py_files.append(path)
-        return py_files
-
-    # Extract imports from file
-    def _extract_imports(self, file_path):
-        imports = set()
-        pattern = re.compile(r'^\s*(?:import|from)\s+([a-zA-Z_][a-zA-Z0-9_]*)')
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-                matches = pattern.findall(content)
-                for mod in matches:
-                    imports.add(mod)
-        except Exception as e:
-            self._log(f"Error reading {file_path}: {e}")
-        return imports
-
-    # Build function
     def _build(self):
         proj = Path(self.project_dir.get())
         entry = Path(self.entry_file.get())
         icon = self.icon_file.get()
 
         if not proj.exists() or not entry.exists():
-            messagebox.showerror("Error", "Project or entry file not found!")
+            messagebox.showerror("Error", "Project or Entry file not found!")
             return
 
-        self._log("Starting build process...")
-        workdir = proj
+        self._log("🚧 Starting build...")
 
-        # PyArmor obfuscate
-        if self.use_pyarmor.get():
-            self._log("Running PyArmor obfuscation...")
-            obf_dir = proj / "obf_src"
-            obf_dir.mkdir(exist_ok=True)
-            cmd = ["pyarmor", "gen", str(entry), "--output", str(obf_dir)]
-            ok = self._run_cmd(cmd, cwd=str(proj))
-            if not ok:
-                self._log("❌ PyArmor failed. Aborting build.")
-                return
-            workdir = obf_dir
-            entry = workdir / entry.name
+        upx_dir = self.upx_path.get()
+        if self.use_upx.get():
+            if shutil.which("upx") or (upx_dir and Path(upx_dir).exists()):
+                self._log(f"🗜 Using UPX at {upx_dir if upx_dir else 'PATH'}")
+            else:
+                self._log("⚠ UPX not found, disabling UPX")
+                self.use_upx.set(False)
 
-        # Scan project for imports
-        self._log("Scanning project for local Python files...")
-        py_files = self._scan_python_files(proj)
-        hidden_imports = set()
-        for py_file in py_files:
-            hidden_imports.update(self._extract_imports(py_file))
-        self._log(f"Detected imports: {', '.join(hidden_imports)}")
+        self._log("🔍 Analyzing imports with modulefinder...")
+        try:
+            imports = detect_imports(str(proj))
+            self._log(f"Detected imports: {', '.join(imports)}")
+        except Exception as e:
+            self._log(f"❌ Import detection failed: {e}")
+            imports = []
 
-        # PyInstaller command
-        self._log("Running PyInstaller...")
+        for mod in imports:
+            if not check_installed(mod):
+                self._log(f"⚠ Missing module: {mod} (pip install {mod})")
+
+        self._log("⚡ Running PyInstaller...")
         cmd = ["pyinstaller"]
         cmd.append("--onefile" if self.onefile.get() else "--onedir")
         if self.windowed.get() and not self.console.get():
@@ -176,29 +203,28 @@ class BuildGUI:
             cmd.extend(["--icon", str(icon)])
         if not self.use_upx.get():
             cmd.append("--noupx")
+        elif self.upx_path.get():
+            cmd.extend(["--upx-dir", self.upx_path.get()])
 
-        # Add-data for resources (json, ico, etc)
         for df in self.data_files:
             src = Path(df)
             dest = src.name
             cmd.extend(["--add-data", f"{src}{DATA_SEP}{dest}"])
 
-        # Add hidden imports for all local .py files
-        local_modules = [f.stem for f in py_files if f != entry]
-        for mod in local_modules:
+        for mod in imports:
             cmd.extend(["--hidden-import", mod])
 
-        # Add project path to PyInstaller
         cmd.extend(["--paths", str(proj)])
         cmd.extend(["--name", "Pypack", str(entry)])
-        self._run_cmd(cmd, cwd=str(workdir))
-        self._log("✅ Build finished! Check the 'dist' folder.")
 
-    # Run command
+        self._run_cmd(cmd, cwd=str(proj))
+        self._log("✅ Build finished! Check 'dist' folder.")
+
     def _run_cmd(self, cmd, cwd=None):
         try:
             self._log("RUN: " + " ".join(cmd))
-            proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, shell=True)
+            proc = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT, text=True, shell=True)
             for line in proc.stdout:
                 self._log(line.strip())
             proc.wait()
@@ -211,6 +237,5 @@ class BuildGUI:
 
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = BuildGUI(root)
-    root.mainloop()
+    app = BuildGUI()
+    app.mainloop()
