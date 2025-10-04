@@ -27,6 +27,7 @@
 * **Enhanced Import Detection**: Accurate scanning using `modulefinder`.
 * **Missing Module Warnings**: Detect missing packages and suggest installation.
 
+See full docs at [Wiki](https://github.com/Arianlavi/Pypack/wiki).
 ---
 
 ## 🖥️ Screenshots
