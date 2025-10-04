@@ -24,7 +24,6 @@
 * **PyArmor Obfuscation**: Optional code protection.
 * **Live Log Window**: Real-time monitoring of build progress.
 * **Modern GUI**: Built with **CustomTkinter** for dark mode and improved user experience.
-* **GitHub Integration**: Quick link to project repository.
 * **Enhanced Import Detection**: Accurate scanning using `modulefinder`.
 * **Missing Module Warnings**: Detect missing packages and suggest installation.
 
