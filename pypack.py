@@ -189,6 +189,9 @@ class BuildGUI(ctk.CTk):
             imports = []
 
         for mod in imports:
+            if mod == "__main__":
+                continue  # __main__ را نادیده بگیر
+
             if not check_installed(mod):
                 self._log(f"⚠ Missing module: {mod} (pip install {mod})")
 
@@ -239,3 +242,4 @@ class BuildGUI(ctk.CTk):
 if __name__ == "__main__":
     app = BuildGUI()
     app.mainloop()
+
