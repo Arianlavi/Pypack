@@ -159,4 +159,3 @@ Licensed under the MIT License. See [LICENSE](LICENSE) file for details.
 Created by **Arian Lavi**
 
 * GitHub: [ArianLavi](https://github.com/arianlavi)
-* Telegram: [@Arianlavi](https://t.me/Arianlvi)
