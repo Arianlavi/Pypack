@@ -1,2 +1,5 @@
-pyinstaller>=5.0
-pyarmor>=8.0
+customtkinter>=5.2.0
+pillow>=10.0.0
+pyinstaller>=6.0.0
+cryptography>=42.0.0
+pyarmor>=8.0.0
