@@ -12,6 +12,10 @@ PyInstaller is solid but the CLI workflow gets old fast, especially once a proje
 - Detects when a project accidentally pulls in more than one Qt binding (PyQt5 + PyQt6 is a common one if you've got leftover code from a migration) and excludes the extra one automatically instead of letting PyInstaller crash mid-build.
 - Always writes `dist` and `build` next to your project folder, even when the encryption step stages files somewhere else first.
 
+### ScreenShot
+
+<img src="app.png">
+
 ## Features
 
 - One-file or one-folder builds, windowed or console
