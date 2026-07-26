@@ -90,4 +90,4 @@ MIT. See [LICENSE](LICENSE).
 
 ## Author
 
-Arian Lavi — [github.com/arianlavi](https://github.com/arianlavi)
+Arian Lavi - Made with Love ❤️
